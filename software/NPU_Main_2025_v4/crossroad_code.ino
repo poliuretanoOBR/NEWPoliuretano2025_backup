@@ -6,7 +6,7 @@ void analyze_green() {
 
 
   //starts walking while looking for green
-  walk(150, 150);
+  walk(SWL, SWR);
 
   //if it detects green once, keeps the information
   for (int i = 0; i < 10; i++) {
@@ -39,7 +39,7 @@ void analyze_green() {
 
     //turn on the green led and turns until it's on a black line
     digitalWrite(LEDG, 1);
-    walk(150, 150);
+    walk(SWL, SWR);
     delay(60);
     turn(-150);
     
@@ -61,12 +61,12 @@ void analyze_green() {
 
     //ledcontrol for debug "there's a green"
     LEDcontrol(0,1,0);
-    walk(150, 150);
+    walk(SWL, SWR);
     delay(60);
 
     //turn on the green led and turns until it's on a black line
     digitalWrite(LEDG, 1);
-    walk(150, 150);
+    walk(SWL, SWR);
     delay(60); 
     turn(60);
     
@@ -89,7 +89,7 @@ void analyze_green() {
   else if (rightgreen == 1) {
     //ledcontrol for debug "there's a green"
     LEDcontrol(0,1,0);
-    walk(150, 150);
+    walk(SWL, SWR);
     delay(60);
     //turn on the green led and turns until it's on a black line
     digitalWrite(LEDG, 1);
@@ -118,7 +118,7 @@ void analyze_green() {
     //ledcontrol for debug "there's NOT a green"
     LEDcontrol(0,0,1);
 
-    walk(-150, -150);
+    walk(-SWL, -SWR);
     delay(150);
     
     //does pid for a while

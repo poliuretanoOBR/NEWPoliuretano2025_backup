@@ -31,7 +31,7 @@ void inc_turn(int alfa) {
       //debug
       //Serial.println(GyZ);
       
-      //turns to left when positive, right when negative. Slowered from 150 to 80
+      //turns to left when positive, right when negative. Slowered from SWL to 80
       if (alfa < 0)walk(80, -80);
       if (alfa > 0)walk(-80, 80);
   
@@ -52,7 +52,7 @@ void inc_analyze_green() {
   
   
     //starts walking while looking for green
-    walk(150, 150);
+    walk(SWL, SWR);
   
     //if it detects green once, keeps the information
     for (int i = 0; i < 10; i++) {
@@ -86,7 +86,7 @@ void inc_analyze_green() {
   
       //turn on the green led and turns 170 degrees (safer than to search the black line at inclination)
       digitalWrite(LEDG, 1);
-      walk(-150, -150);
+      walk(-SWL, -SWR);
       delay(500);
       inc_turn(-150);
 
@@ -115,7 +115,7 @@ void inc_analyze_green() {
 
       //turn on the green led and turns 60 degrees (safer than to search the black line at inclination)
       digitalWrite(LEDG, 1);
-      walk(-150, -150);
+      walk(-SWL, -SWR);
       delay(400); 
       inc_turn(80);
 
@@ -135,7 +135,7 @@ void inc_analyze_green() {
     else if (rightgreen == 1) {
       //ledcontrol for debug "there's a green"
       LEDcontrol(0,1,0);
-      walk(-150, -150);
+      walk(-SWL, -SWR);
       delay(400);
 
       //turn on the green led and turns 60 degrees (safer than to search the black line at inclination)
@@ -158,7 +158,7 @@ void inc_analyze_green() {
       //ledcontrol for debug "there's NOT a green"
       LEDcontrol(0,0,1);
   
-      walk(-150, -150);
+      walk(-SWL, -SWR);
       delay(200);
       
       //does pid for a while
@@ -216,13 +216,13 @@ void DetectInclinationDOWN() {
                 else ninety_countl = 0;  //making the counter go to zero
                 if(ninety_countr >= 5)//if the counter of ninety curve is higher than 2 do a 90 deegre curve
                 {
-                  walk(-150, -150);
+                  walk(-SWL, -SWR);
                   delay(300);
                   turn(-40);
                 }
                 else if(ninety_countl >= 5)//if the counter of ninety curve is higher than 2 do a 90 deegre curve
                 {
-                  walk(-150, -150);
+                  walk(-SWL, -SWR);
                   delay(300);
                   turn(40);
                 }
@@ -288,13 +288,13 @@ void DetectInclinationUP() {
               else ninety_countl = 0;  //making the counter go to zero
               if(ninety_countr >= 5)//if the counter of ninety curve is higher than 2 do a 90 deegre curve
               {
-                walk(-150, -150);
+                walk(-SWL, -SWR);
                 delay(300);
                 turn(-40);
               }
               else if(ninety_countl >= 5)//if the counter of ninety curve is higher than 2 do a 90 deegre curve
               {
-                walk(-150, -150);
+                walk(-SWL, -SWR);
                 delay(300);
                 turn(40);
               }

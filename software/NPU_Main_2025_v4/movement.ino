@@ -112,8 +112,8 @@ void turn(int alfa) {
     // Serial.println(GyZ);
     
     //turns to left when positive, right when negative
-    if (alfa < 0)walk(150, -150);
-    if (alfa > 0)walk(-150, 150);
+    if (alfa < 0)walk(SWL, SWR);
+    if (alfa > 0)walk(SWL, SWR);
 
     //debug
     // Serial.println(total_alfa);

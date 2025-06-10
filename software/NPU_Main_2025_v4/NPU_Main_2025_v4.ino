@@ -136,8 +136,8 @@
 
 
 //straight walking
-#define SWL 505
-#define SWR 517
+#define SWL 150
+#define SWR 150
 
 
 

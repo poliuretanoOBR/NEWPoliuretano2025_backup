@@ -1,17 +1,14 @@
 int sharp_left, sharp_right;
-int ini_angle=0;
+int cur_angle=0;
 
 void scan_entrance_RCJ()
 {
-   freeze(50);//stops the robot for 50 milliseconds
+  freeze(50);//stops the robot for 50 milliseconds
 
-  media_vl = getmUltra(2,15);//get the media for top us
-  delay(25);//default delay for getting information
+  sharp_left = getmsharp(10);
+  sharp_right = getmsharp(10);
 
-  media_vr = getmUltra(4,15);//get the media for right us
-  delay(25);//default delay for getting information
-
-  if(media_vl < 15.0)//if the robot is closer to the left wall
+  if(sharp_left < 200)//if the robot is closer to the left wall (this value isn't real)
   {
     ent_s = -1;//used for turns, when the entrance is in left ent_s = -1 
     LEDcontrol(0,0,1);
@@ -19,7 +16,7 @@ void scan_entrance_RCJ()
     LEDcontrol(0,0,0);
   } 
 
-  else if(media_vr < 15.0)//if the robot is closer to the right wall
+  else if(sharp_right < 200)//if the robot is closer to the right wall (this value isn't real)
   {
     ent_s = 1;//used for turns, when the entrance is in right ent_s = 1
     LEDcontrol(0,1,0);
@@ -49,7 +46,16 @@ void scan_entrance_RCJ()
 
 void update_angle_RCJ(int ang)
 {
-  ini_angle+=ang;
+
+  cur_angle+=ang;
+  if(cur_angle < 0)//if angle is negative 
+  {
+    cur_angle += 360;//adds 360 
+  }
+  else if(cur_angle > 360)//else if angle is higher than 360
+  {
+    cur_angle -= 360;//subtracts 360
+  }
 }
 
 void scan_turn_RCJ(int alfa) 
@@ -60,14 +66,11 @@ void scan_turn_RCJ(int alfa)
   union 
   {
     byte bytes[4]; //array of bytes
-    float dist_to_balls; //name os the float
+    float dist_to_balls; //name of the float
   }floatUnion; //name of the union
 
-  while (ini_angle < 360) //turning 360 degrees
+  while (cur_angle < 360) //turning 360 degrees
   {
-    turn(alfa); //turns alfa degrees before checking the camera
-
-    freeze(100); //waits
 
     //if there are 6 or more bytes that the camera sent
     if (DEBUG_SERIAL.available() >= 6){
@@ -78,17 +81,17 @@ void scan_turn_RCJ(int alfa)
         floatUnion.bytes[i] = DEBUG_SERIAL.read();
       }
     }
-    //turns to the victim
-    turn(ang_to_balls);
     
     //if there is a change in the integer
     if (ang_to_balls != 0) {
+      //turns to the victim
+      turn(ang_to_balls);
+
       walk_distance(floatUnion.dist_to_balls); //walks to the victim
       SwallowBalls(); //catches the victim
-      walk_distance((floatUnion.dist_to_balls*-1)); //walks back
+      // walk_distance((floatUnion.dist_to_balls*-1)); //walks back
+      update_angle_RCJ(ang_to_balls);//updates angle
     }
-
-    update_angle_RCJ(alfa);//updates angle
 
     //back for a new loop
     ang_to_balls=0;
@@ -96,10 +99,12 @@ void scan_turn_RCJ(int alfa)
       floatUnion.bytes[i] = 0;
     }
 
-    delay(200);//waits a little
+    turn(alfa); //turns alfa degrees before checking the camera
+    cur_angle+=alfa;
+    freeze(100); //waits
   }
 
-  ini_angle = 0;//the initial angle goes back to 0 after a 360 turn
+  cur_angle = 0;//the initial angle goes back to 0 after a 360 turn
 }
 
 void Evacuation_Zone()
