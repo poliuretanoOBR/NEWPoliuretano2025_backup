@@ -1,3 +1,4 @@
+//Function used to get the sharp sensors media
 int getmsharp(int j){
   int auxs=0;
   for (int i = 0; i < j; i++) 

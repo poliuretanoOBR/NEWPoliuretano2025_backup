@@ -1,3 +1,4 @@
+//Function that uses the 2 micro-swithces to adjust on a wall behnd the robot
 void touch(int lim_p) 
 {
   unsigned long flag_p = millis();

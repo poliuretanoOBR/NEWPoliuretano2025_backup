@@ -1,3 +1,5 @@
+//This repository consists of our old atempts of solving the evaucation zone and its only used for consulting our old staregyes and maybe adapt them for the new one
+
 void go_to_mid_120()
 {
   if(roomL == 120)

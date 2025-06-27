@@ -19,11 +19,11 @@ void analyze_green() {
     else walk(80, 80);
 
     //condition for green: green is the lowest value on the color read and red value is higher than blue
-    if(gl < rl && gl < bl && rl > bl && higher(rl, gl, bl)-lower(rl, gl, bl)>=20){
+    if(rl > 700 && gl < 700 && gl > 580 && bl > 580 && bl < 700 && higher(rl, gl, bl)-lower(rl, gl, bl)>=20){
       leftgreen=1;
     }
      
-    if(gr < rr && gr < br && rr > br && higher(rr, gr, br)-lower(rr, gr, br)>=20){
+    if(rr > 700 && gr < 700 && gr > 580 && br > 580 && br < 700 && higher(rr, gr, br)-lower(rr, gr, br)>=20){
       rightgreen=1;
     }
     
@@ -118,12 +118,11 @@ void analyze_green() {
     //ledcontrol for debug "there's NOT a green"
     LEDcontrol(0,0,1);
 
-    walk(-SWL, -SWR);
-    delay(150);
+    walk_distance(-1.5);
     
     //does pid for a while
     unsigned long f = millis();
-    while (millis() - f < 1000) {
+    while (millis() - f < 400) {
       array_read();
       PIDwalk(0.6);
       delay(5);

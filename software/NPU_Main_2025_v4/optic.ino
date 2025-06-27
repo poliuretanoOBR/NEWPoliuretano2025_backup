@@ -228,14 +228,14 @@ void finish_line(){
   for (int i = 0; i < 1; i++){
     readLED_finish();
 
-    if (rl < 600 && gl < 800 && bl < 600)reflexive_l=1;
-    if (rr < 600 && gr < 800 && br < 600)reflexive_r=1;
+    if (rl < 600 && gl < 800 && bl < 600 && bl > 300)reflexive_l=1;
+    if (rr < 600 && gr < 800 && br < 600 && br > 300)reflexive_r=1;
 
     // int deltal = higher(rl, gl, bl) - lower(rl, gl, bl); //if necessary, the variation can be used
-    if((rl+60) < gl && rl < bl && bl > 850) finish_l=1;
+    if((rl+60) < gl && rl < bl && bl > 700 && rr < 100) finish_l=1;
 
     // int deltar = higher(rr, gr, br) - lower(rr, gr, br); //if necessary, the variation can be used
-    if((rr+60) < gr && rr < br && br > 850) finish_r=1;
+    if((rr+60) < gr && rr < br && br > 700 && rr < 100) finish_r=1;
   }
 
   if(finish_r == 1 && finish_l == 1 && ms < BLACK) 
@@ -258,12 +258,12 @@ void finish_line(){
   if (reflexive_l && reflexive_r && NOSIB()==0)
   {
     
-    freeze(200);
+    freeze(2000);
     readLED_finish(); 
     reflexive_l=0;reflexive_r=0;
 
-    if (rl < 600 && gl < 800 && bl < 600)reflexive_l=1;
-    if (rr < 600 && gr < 800 && br < 600)reflexive_r=1;
+    if (rl < 600 && gl < 800 && bl < 600 && bl > 300)reflexive_l=1;
+    if (rr < 600 && gr < 800 && br < 600 && br > 300)reflexive_r=1;
 
     if (reflexive_l && reflexive_r && NOSIB()==0)
     {
@@ -295,3 +295,17 @@ void Sinalize(bool gled,int blinksg,bool rled,int blinksr,int t)
     delay(t);
   }
 }
+
+/*void adjust_on_line(unsigned long tlimit)
+{
+  array_read();
+        while(els<=BLACK && ers<=BLACK && millis()-flag_obs<800)
+        {
+          array_read();
+          walk(-SWL, -SWR);
+        }
+        flag_obs = millis();
+        if(ers<=BLACK && millis()-flag_obs<400){while(ers<=BLACK && millis()-flag_obs<400){array_read();walk(0, -SWR);}}
+        flag_obs = millis();
+        if(els<=BLACK && millis()-flag_obs<400){while(els<=BLACK && millis()-flag_obs<400){array_read();walk(-SWL, 0);}}
+}*/

@@ -321,3 +321,149 @@ void DetectInclinationUP() {
   
     if (getup){freeze(50);set_servo(1, 10);getup=0;}
 }
+
+
+//uses mercury sensor to detect inclination
+void DetectInclinationLEFT() {
+    bool getup=0;
+    int ninety_countl = 0, ninety_countr = 0;
+    if (digitalRead(MERC3))ram2++;
+    else ram3 = 0;
+    if (ram3 >= 10){
+      freeze(50);
+      set_servo(1, 180);
+      ram3=5;
+      Serial.println("i got inclined to the left");
+    }
+    while (ram3 >= 10)  {
+        Serial.println(ram3);
+        if (millis() - flag_loop > 10) {
+            //battery alert and array read
+            // BuzzerAlert();
+            array_read();
+            //Crossroad
+            if((ms >=  MIDDLE_BLACK && NOSIB() >= 2) || NOSIB()>=3) {
+                //Stop the robot when enters crossroad
+                back(205);
+                delay(100);
+                back(100);
+                delay(100);
+
+                //analyzes green
+                inc_analyze_green();
+            }
+
+            // Normal line follower
+            else {
+              if (ers > BLACK + 100 && ms < 300 && els < 300)ninety_countr++;//if an extreme sensor is on black and the middle sensor us on while alongside th opposite extreme sensor
+              else ninety_countr = 0;//making the counter go to zero
+              if (els > BLACK + 100 && ms < 300 && ers < 300)ninety_countl++;//if an extreme sensor is on black and the middle sensor us on while alongside th opposite extreme sensor
+              else ninety_countl = 0;  //making the counter go to zero
+              if(ninety_countr >= 5)//if the counter of ninety curve is higher than 2 do a 90 deegre curve
+              {
+                walk(-SWL, -SWR);
+                delay(300);
+                turn(-40);
+              }
+              else if(ninety_countl >= 5)//if the counter of ninety curve is higher than 2 do a 90 deegre curve
+              {
+                walk(-SWL, -SWR);
+                delay(300);
+                turn(40);
+              }
+
+                //line follower
+                PIDwalk(0.5);
+                //   array_print();
+                
+                //obstacle
+                getObstacle();
+            
+                //turns off all led
+                LEDcontrol(0, 0, 0);
+                
+                //search for finish line
+                finish_line();
+            }
+            flag_loop = millis();
+            getup=1;
+            if (digitalRead(MERC3) && ram3 < 10)ram3++;
+            else if (!digitalRead(MERC3))ram3--;
+        }
+    }
+  
+    if (getup){freeze(50);set_servo(1, 10);getup=0;}
+}
+
+
+//uses mercury sensor to detect inclination
+void DetectInclinationRIGHT() {
+    bool getup=0;
+    int ninety_countl = 0, ninety_countr = 0;
+    if (digitalRead(MERC4))ram4++;
+    else ram4 = 0;
+    if (ram4 >= 10){
+      freeze(50);
+      set_servo(1, 180);
+      ram4=5;
+      Serial.println("i got inclined to the right");
+    }
+    while (ram4 >= 10)  {
+        Serial.println(ram4);
+        if (millis() - flag_loop > 10) {
+            //battery alert and array read
+            // BuzzerAlert();
+            array_read();
+            //Crossroad
+            if((ms >=  MIDDLE_BLACK && NOSIB() >= 2) || NOSIB()>=3) {
+                //Stop the robot when enters crossroad
+                back(205);
+                delay(100);
+                back(100);
+                delay(100);
+
+                //analyzes green
+                inc_analyze_green();
+            }
+
+            // Normal line follower
+            else {
+              if (ers > BLACK + 100 && ms < 300 && els < 300)ninety_countr++;//if an extreme sensor is on black and the middle sensor us on while alongside th opposite extreme sensor
+              else ninety_countr = 0;//making the counter go to zero
+              if (els > BLACK + 100 && ms < 300 && ers < 300)ninety_countl++;//if an extreme sensor is on black and the middle sensor us on while alongside th opposite extreme sensor
+              else ninety_countl = 0;  //making the counter go to zero
+              if(ninety_countr >= 5)//if the counter of ninety curve is higher than 2 do a 90 deegre curve
+              {
+                walk(-SWL, -SWR);
+                delay(300);
+                turn(-40);
+              }
+              else if(ninety_countl >= 5)//if the counter of ninety curve is higher than 2 do a 90 deegre curve
+              {
+                walk(-SWL, -SWR);
+                delay(300);
+                turn(40);
+              }
+
+                //line follower
+                PIDwalk(0.5);
+                //   array_print();
+                
+                //obstacle
+                getObstacle();
+            
+                //turns off all led
+                LEDcontrol(0, 0, 0);
+                
+                //search for finish line
+                finish_line();
+            }
+            flag_loop = millis();
+            getup=1;
+            if (digitalRead(MERC4) && ram4 < 10)ram4++;
+            else if (!digitalRead(MERC4))ram4--;
+        }
+    }
+  
+    if (getup){freeze(50);set_servo(1, 10);getup=0;}
+}

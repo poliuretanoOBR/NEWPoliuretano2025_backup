@@ -23,21 +23,23 @@
 //mercury port
 #define MERC 40
 #define MERC2 42
+#define MERC3 42
+#define MERC4 42
 
 //line constants
-#define BLACK 550 //value of the black line
-#define MIDDLE_BLACK 750 //value of the black line for the middle sensor
+#define BLACK 350 //value of the black line
+#define MIDDLE_BLACK 350 //value of the black line for the middle sensor
 #define WHITE 100 //value of the white line
 
 //array ports
-#define ERS A2 // external right sensor in the analog 2
-#define RS A3 // Right sensor in the analog 3
-#define MS A4 // Middle sensor in the analog 4
-#define LS A5 // Left sensor in the analog 5
-#define ELS A6 // external left sensor in the analog 6
-#define R A14 // Red LED in the A14 port
-#define G A13// Green LED in the A13 port
-#define B A12// Blue LED in the A12 port
+#define ERS A5 // external right sensor in the analog 2
+#define RS A4 // Right sensor in the analog 3
+#define MS A6 // Middle sensor in the analog 4
+#define LS A3 // Left sensor in the analog 5
+#define ELS A2 // external left sensor in the analog 6
+#define R 48 // Red LED in the A14 port
+#define G 44// Green LED in the A13 port
+#define B 46// Blue LED in the A12 port
 #define RCS A7 // Right color sensor analog 7
 #define LCS A8 // Left color sensor analog 8
 
@@ -182,7 +184,7 @@ double previous_error=0; //"previous run" timer
 int ers, rs, ms, ls, els, count_u = 0;   // Middle, left, right, external left and external right sensor defined
 int rr, rl, gr, gl, br, bl; // Creates the color sensor variables, in RGB for each side
 int red_rescue, green_rescue, blue_rescue; // Creates the color sensor variables, in RGB (rescue)
-int ram = 0, ram2=0; //
+int ram = 0, ram2=0, ram3=0, ram4=0; //
 
 const int DXL_DIR_PIN = 32; // direction PIN
  
@@ -433,96 +435,62 @@ void setup() {
   flag_loop = millis();
 
 }
+while (1) { 
+    // walk(SWL,SWR);
+    // Serial.println(getUltra(4));
+    // delay(100);
+    // readLED();
+    array_read();
+    // PIDwalk(0.8);
+    // LEDcontrol(0, 0, 1);  
+    array_print();
 
-int receive=0;
-union 
-{
-  byte bytes[4];
-  float rec1;
-}rec;
-
+    // digitalWrite(A14, 0);
+    // color_print();
+    // walk(200, 200); 
+    // Serial.println(digitalRead(MERC2));
+  }
 
 void loop() {
-  // freeze(1000);
-  // turn(90);
-  // while(1);
-  if (DEBUG_SERIAL.available() >= 6) {
-    // Serial.print("FEIN\n");
-    receive = DEBUG_SERIAL.read() | (DEBUG_SERIAL.read() << 8); //reads the first two bytes, set as int
-    //Reads the last 4 bytes, sets as the union float
-    for (int i = 0; i < 4; i++){
-      rec.bytes[i] = DEBUG_SERIAL.read();
+  
+
+  if (millis() - flag_loop > 10) {
+    //battery alert and array read
+    BuzzerAlert();
+    array_read();
+
+    //detect when it goes up
+    DetectInclinationDOWN();
+    DetectInclinationUP();
+
+    // //Crossroad
+    if((ms >=  MIDDLE_BLACK && NOSIB() >= 2) || NOSIB()>=3) {
+      //Stop the robot when enters crossroad
+      walk_distance(-1.75);
+
+      //analyzes green
+      analyze_green();
     }
-  }
-  
-  if (receive != 0){
-    // Serial.print("Achei o objeto\n");
-    turn(90);
-    while(1);
-  } else {
-    // Serial.print("NOOOOO\n");
-  }
-  
-  // if (millis() - flag_loop > 10) {
+
+    // Normal line follower
+    else {
+
+      //line follower
+      PIDwalk(0.8);
+      array_print();
+      
+      //obstacle
+      getObstacle();
     
-  //   while (1) { 
-  //     walk(SWL,SWR);
-  //     // Serial.println(getUltra(4));
-  //     // delay(100);
-  //     // readLED();
-  //     // array_read();
-  //     // PIDwalk(0.8);
-  //     // LEDcontrol(0, 0, 1);  
-  //     // array_print();
+      //turns off all led
+      LEDcontrol(0, 0, 0);
       
-  //     // digitalWrite(A14, 0);
-  //     // color_print();
-  //     // walk(200, 200); 
-  //     // Serial.println(digitalRead(MERC2));
-  //   }
-
-
-  //   //battery alert and array read
-  //   // BuzzerAlert();
-  //   array_read();
-
-  //   //detect when it goes up
-  //   DetectInclinationDOWN();
-  //   DetectInclinationUP();
-
-  //   // //Crossroad
-  //   if((ms >=  MIDDLE_BLACK && NOSIB() >= 2) || NOSIB()>=3) {
-  //     //Stop the robot when enters crossroad
-  //     back(205);
-  //     delay(100);
-  //     back(100);
-  //     delay(100);
-
-  //     //analyzes green
-  //     analyze_green();
-  //   }
-
-  //   // Normal line follower
-  //   else {
-
-  //     //line follower
-  //     PIDwalk(0.8);
-  //     array_print();
+      //search for finish line
+      finish_line();
+    }
       
-  //     //obstacle
-  //     getObstacle();
-    
-  //     //turns off all led
-  //     LEDcontrol(0, 0, 0);
-      
-  //     //search for finish line
-  //     finish_line();
-  //   }
-      
-  //   // Wait 5ms for next cycle
-  //   // Serial.print("MILLIS: ");
-  //   // Serial.println(millis()-flag_loop);
-  //   flag_loop = millis();
-  // }
-  //delayMicroseconds(500);
+    // Wait 5ms for next cycle
+    flag_loop = millis();
+  }
+  delayMicroseconds(500);
 }

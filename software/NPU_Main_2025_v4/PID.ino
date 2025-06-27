@@ -51,9 +51,9 @@ void PIDwalk(float a) {
   //Serial.println(u);
   
   //if middle sensor and internal sensor of any side is on black, walk straight
-  if ((ms > MIDDLE_BLACK && ers > BLACK) || (ms > MIDDLE_BLACK && els > BLACK))
+  if ((ls > BLACK && rs > BLACK) || (els > BLACK && ers > BLACK) || (ms > MIDDLE_BLACK && els > BLACK) || (ms > MIDDLE_BLACK && ers > BLACK))
   {
-    u=0;  
+    u=0;
   }
 
   // if (ms > MIDDLE_BLACK && ls > BLACK && els > 150)

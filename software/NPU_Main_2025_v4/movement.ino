@@ -78,9 +78,9 @@ void freeze(int del) {
 
 //positive values = turn left
 void turn(int alfa) {
-  //sensor addres and value of Z axis of gyroscope
+  // sensor addres and value of Z axis of gyroscope
   int16_t GyZ=0;
-
+  // Serial.println("entrei no turn");
   double total_alfa = 0.0, dimensional_error = 1.08; //error calculated by the difference in degree 
 
   //timer variables
@@ -89,7 +89,7 @@ void turn(int alfa) {
   
   //while it didn't walk to the said angle "alfa"
   while(abs(total_alfa) <= abs(alfa)){
-
+    Serial.println("entrei no while");
     //the elapsed time
     elapsedtime = (double)(millis() - previoustimer) / 1000.0; //as the scale is degrees/seconds, we divided the time in millis by 1000
     previoustimer = millis();
@@ -109,17 +109,30 @@ void turn(int alfa) {
     total_alfa += (double)GyZ * dimensional_error * elapsedtime / 131.0; //scale in degrees/seconds. For a 250deg/s range we have to divide first the raw value by 131.0, according to the datasheet
 
     //debug
-    // Serial.println(GyZ);
+     //Serial.println(GyZ);
     
     //turns to left when positive, right when negative
-    if (alfa < 0)walk(SWL, SWR);
-    if (alfa > 0)walk(SWL, SWR);
-
-    //debug
-    // Serial.println(total_alfa);
+    Serial.println("ALFA:");
+    Serial.println(alfa);
+    if (alfa < 0)
+    {
+      Serial.println("girando pra direita");
+      walk(SWL, -SWR);
+      Serial.println("andando");
+    }
+    if (alfa > 0)
+    {
+      Serial.println("girando pra esquerda");
+      walk(-SWL, SWR);
+      Serial.println("andando");
+    }
+    // debug
+    Serial.println(total_alfa);
   }
   //stops
+  Serial.println("fim do turn");
   freeze(50);
+
 }
 
 

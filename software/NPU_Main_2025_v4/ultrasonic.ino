@@ -121,482 +121,190 @@ void getObstacle() {
    }
 }
 
-// void Obstacle_time() {
-//    int obs_s=1;
-
-//    turn(90*obs_s);   
-
-//    walk(100, 100);
-//    delay(200);
-//    freeze(50);
-//    array_read();
-//    flag = millis();
-//    while(els<=400 && ers<=400 && millis()-flag<1000){
-//       array_read();
-//       array_print();
-//       Serial.println(millis()-flag);
-//       walk(-110, -110);
-//    }
-//    if(ers<=700 && millis()-flag<1000){while(ers<=700 && millis()-flag<1000){array_read();walk(0, -130);array_print();Serial.println(millis()-flag);}walk(0, -130);delay(150);freeze(50);}
-//    if(els<=700 && millis()-flag<1000){while(els<=700 && millis()-flag<1000){array_read();walk(-130, 0);array_print();Serial.println(millis()-flag);}walk(0, -130);delay(150);freeze(50);}
-//    array_print();Serial.println(millis()-flag);
-//    freeze(100);
-//    walk_rev(22.5, 1);
-//    freeze(100);
-//    turn(-90*obs_s);
-//    freeze(100);
-//    walk_rev(37.0, 1);
-//    freeze(100);
-//    turn(-90*obs_s);
-//    freeze(100);
-//    walk_rev(10.0, 1);
-//    array_read();
-//    while(NOSIB()==0){
-//       array_read();
-//       array_print();
-//       walk(180, 180);
-//    }
-//    walk_rev(3.0, 1);
-//    freeze(30);
-//    turn(90*obs_s);
-//    while(1);
-// }
-
 void Obstacle(char c) {
 
    //timer for ultrasonic
-   unsigned long flag_u = millis();
-   int obs = 0;
-   bool confirm=0;
+   unsigned long flag_obs;
+   int obs_side = 0, counter_black = 0; //1 is for right and -1 for left in obs_side
+   bool obs_finish = 0;
    int counter_ref = 0;
+   while(!obs_finish)
+   {
+      //if the right side is greater, it turns right
+      /*vl = getmnUltra(1, 15);
+      vr = getmnUltra(2, 15);
+      if (vr >= vl)obs_side=1;
+      else obs_side = -1;*/
+      //side 
+      float lat_dist;//variable used to get the distance of the lateral ultra
+      turn(-90*obs_side);//turns 90 deegres to stay parrallel to the obstacle
+      walk_distance(2.0);//walk to adjust on line going back
 
-   //if the right side is greater, it turns right
-   vl = getmnUltra(1, 15);
-   vr = getmnUltra(2, 15);
-   if (vr >= vl)obs=1;
-   else obs = -1;
-
-   //side 
-   float dl;
-   
-   
-   //Stop the robot and turn
-   back(1000);
-   delay(30);
-   freeze(30);
-   turn(-90*obs);
-
-
-   //walk back
-   walk(0, 0);
-   walk(SWL, SWR);
-   delay(500);
-
-   //adjusts itself to be aligned perpendicular to the black line
-   array_read();
-   flag = millis();
-   while(els<=BLACK && ers<=BLACK && millis()-flag<800){
       array_read();
-      walk(-SWL, -SWR);
-   }
-   if(ers<=BLACK && millis()-flag<800){while(ers<=BLACK && millis()-flag<800){array_read();walk(0, -SWR);}}
-   if(els<=BLACK && millis()-flag<800){while(els<=BLACK && millis()-flag<800){array_read();walk(-SWL, 0);}}
-
-   //reads the side ultrasonic value
-   dl = getUltra(obs==1 ? 1 : 2);
-
-   //walks until it doesn't detects obstacle or for 5 seconds
-   flag_u = millis();
-   walk(SWL, SWR);
-   while(dl < 25.0 && dl != 0){
-      delay(5);
-      dl = getUltra(obs==1 ? 1 : 2);
-      if (millis() - flag_u > 5000)break;
-   }
-   
-   //walks a little more for guarantee
-   walk(SWL, SWR);
-   delay(1300);
-   walk(0, 0);
-   delay(70);
-
-   //turns left and reads the value of left ultra
-   turn(85*obs);
-
- 
-   //REFERENCIA
-
-
-
-
-
-
-
-
-
-
-   //updates side value
-   dl = getUltra(obs==1 ? 1 : 2);
-
-   //walks until it detects obstacle or for 5 seconds
-   walk(SWL, SWR);
-   flag_u = millis();
-   while(dl > 20.0 || dl== 0.0) {
-      array_read();
-      delay(5);
-      dl = getUltra(obs==1 ? 1 : 2);
-
-      if (millis() - flag_u > 5000)break;
-      
-      if (NOSIB() >= 2)
-      {
-         counter_ref+=5;
-      }
-
-      if (counter_ref > 5){
-         do
-         {
-            array_read();
-            walk(SWL,SWR);
-            delay(5);
-         }
-         while(NOSIB() >= 1);   
-         //turns right
-         turn(-90*obs);
-
-         //walks back what it has gone forward
+      flag_obs = millis();
+      while(els <= BLACK && ers <= BLACK && millis()-flag_obs < 800){
+         array_read();
          walk(-SWL, -SWR);
-         delay(200);
-         //does pid very slowly
-         flag_u = millis();
-         while(millis() - flag_u < 1000) {
-            array_read();
-            PIDwalk(0.3);
-         }
-         walk(0,0);
-         freeze(25);
-         return;
       }
-   }
-   counter_ref = 0;
-   
-   //walks a little more for guarantee
-   walk(SWL, SWR);
-   
-   flag_u = millis();
-   while (millis() - flag_u < 1250) {
-      array_read();
-      delay(5);
-      if (NOSIB() >= 2)
-      {
-         do
-         {
-            array_read();
-            walk(SWL,SWR);
-            delay(5);
-         }
-         while(NOSIB() >= 1);
-         //turns right
-         turn(-90*obs);
+      if(ers<=BLACK && millis()-flag_obs < 400){while(ers<=BLACK && millis()-flag_obs <400){array_read();walk(0, -SWR);}}
+      if(els<=BLACK && millis()-flag_obs<400){while(els<=BLACK && millis()-flag_obs<400){array_read();walk(-SWL, 0);}}
+      //this while is used for the robot toa adjust on the black line
 
-         //walks back what it has gone forward
-         walk(-SWL, -SWR);
-         delay(200);
+      lat_dist = getUltra(obs_side==1 ? 1 : 2);//gets the lateral ultra distance
 
-         //does pid very slowly
-         flag_u = millis();
-         while(millis() - flag_u < 1000) {
-            array_read();
-            PIDwalk(0.3);
-         }
-
-
-         freeze(25);
-         return;
-      }
-   }
-   freeze(50);
-   
-   //walks a little more for guarantee
-   walk(SWL, SWR);
-   flag_u = millis();
-   while (millis() - flag_u < 500) {
-      array_read();
-      delay(5);
-      if (NOSIB() >= 2)
-      {
-         do
-         {
-            array_read();
-            walk(SWL,SWR);
-            delay(5);
-         }
-         while(NOSIB() >= 1);
-         //turns right
-         turn(-90*obs);
-
-         //walks back what it has gone forward
-         walk(-SWL, -SWR);
-         delay(200);
-         //does pid very slowly
-         flag_u = millis();
-         while(millis() - flag_u < 1000) {
-            array_read();
-            PIDwalk(0.3);
-         }
-
-
-         freeze(25);
-         return;
-      }
-   }
-   walk(0, 0);
-
-   //walks until it doesn't detect obstacle or for 5 seconds
-   flag_u = millis();
-   walk(SWL, SWR);
-   counter_ref = 0;
-
-
-   //AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-
-
-   //walks a little more for guarantee
-   walk(SWL, SWR);
-   flag_u = millis();
-   while (millis() - flag_u < 1250) {
-      array_read();
-      delay(5);
-      if (NOSIB() >= 2)
-      {
-         do
-         {
-            array_read();
-            walk(SWL,SWR);
-            delay(5);
-         }
-         while(NOSIB() >= 1);
-         //turns right
-         turn(-90*obs);
-
-         //walks back what it has gone forward
-         walk(-SWL, -SWR);
-         delay(200);
-         //does pid very slowly
-         flag_u = millis();
-         while(millis() - flag_u < 1000) {
-            array_read();
-            PIDwalk(0.3);
-         }
-
-
-         walk(0,0);
-         freeze(25);
-         return;
-      }
-   }
-   walk(SWL, SWR);
-   delay(500);
-
-   //turns left and reads the value of left ultra
-   turn(85*obs);
-   freeze(25);
-
-
-   //updates side value
-   dl = getUltra(obs==1 ? 1 : 2);
-
-   //walks until it detects obstacle or for 5 seconds
-   walk(SWL, SWR);
-   flag_u = millis();
-   while(dl > 20.0 || dl== 0.0) {
-      array_read();
-      delay(5);
-      dl = getUltra(obs==1 ? 1 : 2);
-
-      if (millis() - flag_u > 5000)break;
-      
-      if (NOSIB() >= 2)
-      {
-         counter_ref+=5;
-      }
-
-      if (counter_ref > 5){
-         do
-         {
-            array_read();
-            walk(SWL,SWR);
-            delay(5);
-         }
-         while(NOSIB() >= 1);   
-         //turns right
-         turn(-90*obs);
-
-         //walks back what it has gone forward
-         walk(-SWL, -SWR);
-         delay(200);
-         //does pid very slowly
-         flag_u = millis();
-         while(millis() - flag_u < 1000) {
-            array_read();
-            PIDwalk(0.3);
-         }
-         walk(0,0);
-         freeze(25);
-         return;
-      }
-   }
-   counter_ref = 0;
-
-
-   //walks a little more for guarantee
-   walk(SWL, SWR);
-   
-   flag_u = millis();
-   while (millis() - flag_u < 1250) {
-      array_read();
-      delay(5);
-      if (NOSIB() >= 2)
-      {
-         do
-         {
-            array_read();
-            walk(SWL,SWR);
-            delay(5);
-         }
-         while(NOSIB() >= 1);
-         //turns right
-         turn(-90*obs);
-
-         //walks back what it has gone forward
-         walk(-SWL, -SWR);
-         delay(200);
-
-         //does pid very slowly
-         flag_u = millis();
-         while(millis() - flag_u < 1000) {
-            array_read();
-            PIDwalk(0.3);
-         }
-
-
-         freeze(25);
-         return;
-      }
-   }
-   freeze(50);
-   
-   //walks a little more for guarantee
-   walk(SWL, SWR);
-   flag_u = millis();
-   while (millis() - flag_u < 500) {
-      array_read();
-      delay(5);
-      if (NOSIB() >= 2)
-      {
-         do
-         {
-            array_read();
-            walk(SWL,SWR);
-            delay(5);
-         }
-         while(NOSIB() >= 1);
-         //turns right
-         turn(-90*obs);
-
-         //walks back what it has gone forward
-         walk(-SWL, -SWR);
-         delay(200);
-         //does pid very slowly
-         flag_u = millis();
-         while(millis() - flag_u < 1000) {
-            array_read();
-            PIDwalk(0.3);
-         }
-
-
-         freeze(25);
-         return;
-      }
-   }
-   walk(0, 0);
-
-   //walks until it doesn't detect obstacle or for 5 seconds
-   flag_u = millis();
-   walk(SWL, SWR);
-   counter_ref = 0;
-
-
-   //AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-
-
-   //walks a little more for guarantee
-   walk(SWL, SWR);
-   flag_u = millis();
-   while (millis() - flag_u < 1250) {
-      array_read();
-      delay(5);
-      if (NOSIB() >= 2)
-      {
-         do
-         {
-            array_read();
-            walk(SWL,SWR);
-            delay(5);
-         }
-         while(NOSIB() >= 1);
-         //turns right
-         turn(-90*obs);
-
-         //walks back what it has gone forward
-         walk(-SWL, -SWR);
-         delay(500);
-         //does pid very slowly
-         flag_u = millis();
-         while(millis() - flag_u < 1000) {
-            array_read();
-            PIDwalk(0.3);
-         }
-
-
-         walk(0,0);
-         freeze(25);
-         return;
-      }
-   }
-   walk(SWL, SWR);
-   delay(500);
-
-   //turns left and reads the value of left ultra
-   turn(85*obs);
-   freeze(25);
-
-   array_read();
-   while (counter_ref < 5) {
+      //walks until it doesn't detects obstacle or for 5 seconds
+      flag_obs = millis();
       walk(SWL, SWR);
-      if (NOSIB() >= 2)counter_ref+=5;
-      array_read();
-   }
+      while(lat_dist < 25.0 && lat_dist != 0){
+         delay(5);
+         lat_dist = getUltra(obs_side==1 ? 1 : 2);
+         if (millis() - flag_obs > 5000)break; 
+      }
+      //walks until the robot passes the obstacle
+      walk_distance(3.0);//walks a little more to ensure that the robot passed the obstacle
+      turn(85*obs_side);//turns left and reads the value of left ultra
+      lat_dist = getUltra(obs_side==1 ? 1 : 2);//gets the lateral ultra distance
+      
+      //walks until the robot detects the obstacle
+      walk(SWL, SWR);
+      flag_obs = millis();
+      while(lat_dist > 20.0 || lat_dist== 0.0) {
+         array_read();
+         delay(5);
+         lat_dist = getUltra(obs_side==1 ? 1 : 2);
+         if (millis() - flag_obs> 5000)break;
+      }
+      //while the robot walks until detects black line or for 2.5 seconds
+      while(millis()-flag_obs < 2500 && counter_black <= 2)
+      {
+         array_read();
+         walk(SWL,SWR);
+         if(NOSIB() > 1)
+         {
+            counter_black++;
+         }
+      }
+      if(counter_black > 2) //if the robot detected the black line more than 2 times
+      {
+         obs_finish = 1; //the robot already finished the obstacle
+      }
+      if(obs_finish == 1)//if the robot finished the obstacle
+      {
+         walk_distance(3.0);  
+         flag_obs = millis();
+         while(els<=BLACK && ers<=BLACK && millis()-flag_obs<800){
+            array_read();
+            walk(-SWL, -SWR);
+         }
+         if(ers<=BLACK && millis()-flag_obs<400){while(ers<=BLACK && millis()-flag_obs<400){array_read();walk(0, -SWR);}}
+         if(els<=BLACK && millis()-flag_obs<400){while(els<=BLACK && millis()-flag_obs<400){array_read();walk(-SWL, 0);}}
+         //this while is used for the robot toa adjust on the black line
+         turn(-90*obs_side);
+         walk_distance(-4.0);
+         flag_obs = millis();
+         while(millis - flag_obs < 1000)
+         {
+            array_read();
+            PIDwalk(0.6);    
+         }
+         break;
+      }
 
-   while(NOSIB() >= 1) {
-      array_read();
-      walk(SWL,SWR);
-   }
-   
-   //turns right
-   turn(-85*obs);
+      lat_dist = getUltra(obs_side==1 ? 1 : 2);//gets the lateral ultra distance
 
-   //does pid very slowly
-   flag_u = millis();
-   while(millis() - flag_u < 1000) {
-      array_read();
-      PIDwalk(0.3);
-   }
+      //walks until it doesn't detects obs_sidetacle or for 5 seconds
+      flag_obs = millis();
+      walk(SWL, SWR);
+      while(lat_dist < 25.0 && lat_dist != 0){
+         delay(5);
+         lat_dist = getUltra(obs_side==1 ? 1 : 2);
+         if (millis() - flag_obs > 5000)break; 
+      }
 
-   //walks back what it has gone forward
-   walk(-SWL, -SWR);
-   delay(500);
-   
-   walk(0,0);
-   freeze(25);
+      turn(85*obs_side);//turns to continue its path (ultimo giro do caminho normal)
+      
+      //walks until the robot detects the obstacle
+      walk(SWL, SWR);
+      flag_obs = millis();
+      while(lat_dist > 20.0 || lat_dist== 0.0) {
+         array_read();
+         delay(5);
+         lat_dist = getUltra(obs_side==1 ? 1 : 2);
+         if (millis() - flag_obs> 5000)break;
+      }
+
+      //while the robot walks until detects black line
+      while(millis()-flag_obs < 2500 && counter_black <= 2)
+      {
+         array_read();
+         walk(SWL,SWR);
+         if(NOSIB() > 1)
+         {
+            counter_black++;
+         }
+      }
+      if(counter_black > 2) //the robot already finished the obstacle
+      {
+         obs_finish = 1;
+      }
+      if(obs_finish == 1)//if the robot finished the obstacle
+      {
+         walk_distance(3.0);  
+         flag_obs = millis();
+         while(els<=BLACK && ers<=BLACK && millis()-flag_obs<800){
+            array_read();
+            walk(-SWL, -SWR);
+         }
+         if(ers<=BLACK && millis()-flag_obs<400){while(ers<=BLACK && millis()-flag_obs<400){array_read();walk(0, -SWR);}}
+         if(els<=BLACK && millis()-flag_obs<400){while(els<=BLACK && millis()-flag_obs<400){array_read();walk(-SWL, 0);}}
+         turn(-90*obs_side);
+         walk_distance(-4.0);
+         flag_obs = millis();
+         while(millis - flag_obs < 1000)
+         {
+            array_read();
+            PIDwalk(0.6);    
+         }
+         break;
+      }
+      
+       //walks until it doesn't detects obs_sidetacle or for 5 seconds
+      flag_obs = millis();
+      walk(SWL, SWR);
+      while(lat_dist < 25.0 && lat_dist != 0){
+         delay(5);
+         lat_dist = getUltra(obs_side==1 ? 1 : 2);
+         if (millis() - flag_obs > 5000)break; 
+      }
+
+      //fim do caminho normal
+      walk_distance(3.0);
+      turn(85*obs_side);
+      walk(SWL, SWR);
+      
+      flag_obs = millis();
+      while(lat_dist > 20.0 || lat_dist== 0.0) {
+         array_read();
+         delay(5);
+         lat_dist = getUltra(obs_side==1 ? 1 : 2);
+         if (millis() - flag_obs> 5000)break;
+      }
+      walk_distance(15.0);
+      flag_obs = millis();
+      while(els<=BLACK && ers<=BLACK && millis()-flag_obs<800){
+         array_read();
+         walk(-SWL, -SWR);
+      }
+      if(ers<=BLACK && millis()-flag_obs<400){while(ers<=BLACK && millis()-flag_obs<400){array_read();walk(0, -SWR);}}
+      if(els<=BLACK && millis()-flag_obs<400){while(els<=BLACK && millis()-flag_obs<400){array_read();walk(-SWL, 0);}}
+      turn(-90*obs_side);
+      walk_distance(-4.0);
+      flag_obs = millis();
+      while(millis - flag_obs < 1000)
+      {
+         array_read();
+         PIDwalk(0.6);    
+      }
+      break;
+   }
 }
