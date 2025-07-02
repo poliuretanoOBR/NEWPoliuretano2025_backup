@@ -228,14 +228,14 @@ void finish_line(){
   for (int i = 0; i < 1; i++){
     readLED_finish();
 
-    if (rl < 600 && gl < 800 && bl < 600 && bl > 300)reflexive_l=1;
-    if (rr < 600 && gr < 800 && br < 600 && br > 300)reflexive_r=1;
+    if (rl < 40 && gl < 40 && bl < 40)reflexive_l=1;
+    if (rr < 40 && gr < 40 && br < 40)reflexive_r=1;
 
     // int deltal = higher(rl, gl, bl) - lower(rl, gl, bl); //if necessary, the variation can be used
-    if((rl+60) < gl && rl < bl && bl > 700 && rr < 100) finish_l=1;
+    if(rl < 150 && gl > 700 && bl > 700) finish_l=1;
 
     // int deltar = higher(rr, gr, br) - lower(rr, gr, br); //if necessary, the variation can be used
-    if((rr+60) < gr && rr < br && br > 700 && rr < 100) finish_r=1;
+    if(rr < 150 && gr > 700 && br > 700) finish_r=1;
   }
 
   if(finish_r == 1 && finish_l == 1 && ms < BLACK) 
@@ -255,20 +255,18 @@ void finish_line(){
     }
   }
 
-  if (reflexive_l && reflexive_r && NOSIB()==0)
+  if (reflexive_l & NOSIB() == 0)
   {
     
     freeze(2000);
     readLED_finish(); 
     reflexive_l=0;reflexive_r=0;
 
-    if (rl < 600 && gl < 800 && bl < 600 && bl > 300)reflexive_l=1;
-    if (rr < 600 && gr < 800 && br < 600 && br > 300)reflexive_r=1;
+    if (rl < 45 && gl < 45 && bl < 45)reflexive_l=1;
 
-    if (reflexive_l && reflexive_r && NOSIB()==0)
+    if (reflexive_l && NOSIB() == 0)
     {
-      tone(BUZZER, 155, 5);
-      LEDcontrol(1,1,1);
+      freeze(1000);
 
       Evacuation_Zone();
     }

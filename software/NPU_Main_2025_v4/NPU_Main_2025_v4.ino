@@ -11,12 +11,12 @@
 #define SERVO4 999 //servo port
 
 //ultrasonic ports
-#define ECHO1 41//echo ultrasonic left
-#define TRIG1 43 //trig ultrasonic left
+#define ECHO1 35//echo ultrasonic left
+#define TRIG1 33 //trig ultrasonic left
 #define ECHO2 45 //echo ultrasonic right
 #define TRIG2 47 //trig ultrasonic right
-#define ECHO3 33 //echo ultrasonic top
-#define TRIG3 35   //trig ultrasonic top
+#define ECHO3 41 //echo ultrasonic top
+#define TRIG3 43   //trig ultrasonic top
 #define ECHO4 37//echo4 ultrasonic bottom 33
 #define TRIG4 39 //trig ultrasonic bottom 35
 
@@ -82,11 +82,11 @@
 #define LEDR 22 //define red led port
 
 
-
 //constants of proportional, integral and derivative
 #define KP 0.5 //percentage of proportional band
 #define KI 0.00 //inverse of integral time
 #define KD 0.3 //derivative of error
+
 
 //maximum and minimum values of i
 #define MIN_INTEGRAL -100
@@ -289,7 +289,7 @@ float getmnUltra(int u, int den);
 float getMaxLeftRight();
 void getObstacle();
 void Obstacle(char c);
-// void Obstacle_time();
+void Obstacle_time();
 
 //encoder
 void revolution(float revl, float revr, bool go_back);
@@ -435,31 +435,27 @@ void setup() {
   flag_loop = millis();
 
 }
-while (1) { 
-    // walk(SWL,SWR);
-    // Serial.println(getUltra(4));
-    // delay(100);
-    // readLED();
-    array_read();
-    // PIDwalk(0.8);
-    // LEDcontrol(0, 0, 1);  
-    array_print();
-
-    // digitalWrite(A14, 0);
-    // color_print();
-    // walk(200, 200); 
-    // Serial.println(digitalRead(MERC2));
-  }
-
 void loop() {
   
-
+  
+  while(1)
+  {
+    // Serial.println(getUltra(1));  
+    // delay(20);
+    Serial.println("C");
+    Serial.println("A");
+    //Obstacle_time();
+    // array_read();
+    // array_print();
+    /*readLED();
+    color_print();*/
+  }
   if (millis() - flag_loop > 10) {
     //battery alert and array read
     BuzzerAlert();
     array_read();
 
-    //detect when it goes up
+    //detect when it goes up 
     DetectInclinationDOWN();
     DetectInclinationUP();
 
@@ -467,7 +463,6 @@ void loop() {
     if((ms >=  MIDDLE_BLACK && NOSIB() >= 2) || NOSIB()>=3) {
       //Stop the robot when enters crossroad
       walk_distance(-1.75);
-
       //analyzes green
       analyze_green();
     }
@@ -482,7 +477,7 @@ void loop() {
       //obstacle
       getObstacle();
     
-      //turns off all led
+      //turns+ off all led
       LEDcontrol(0, 0, 0);
       
       //search for finish line

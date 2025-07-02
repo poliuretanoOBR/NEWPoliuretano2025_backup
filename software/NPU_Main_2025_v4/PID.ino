@@ -83,7 +83,7 @@ void PIDwalk(float a) {
   {
     
     walk((265-u)*a, 265*a);
-    if (u == U_MAX)delay(15);
+    if (u == U_MAX)delay(5);
   }
   else
   {

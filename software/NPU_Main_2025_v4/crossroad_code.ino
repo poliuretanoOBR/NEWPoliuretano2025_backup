@@ -9,7 +9,7 @@ void analyze_green() {
   walk(SWL, SWR);
 
   //if it detects green once, keeps the information
-  for (int i = 0; i < 10; i++) {
+  for (int i = 0; i < 11; i++) {
     readLED();
     if (i == 7){
       walk(0, 0);
@@ -19,18 +19,17 @@ void analyze_green() {
     else walk(80, 80);
 
     //condition for green: green is the lowest value on the color read and red value is higher than blue
-    if(rl > 700 && gl < 700 && gl > 580 && bl > 580 && bl < 700 && higher(rl, gl, bl)-lower(rl, gl, bl)>=20){
+    if(rl > gl && bl > gl && rl > (gl + 50)){
       leftgreen=1;
     }
      
-    if(rr > 700 && gr < 700 && gr > 580 && br > 580 && br < 700 && higher(rr, gr, br)-lower(rr, gr, br)>=20){
+    if(rr > gr && br > gr && rr > (gr + 50)){
       rightgreen=1;
     }
     
     delay(10);
   }
-  
-
+  freeze(2);
   //if there's green on both sides
   if (leftgreen == 1 && rightgreen == 1) {
 

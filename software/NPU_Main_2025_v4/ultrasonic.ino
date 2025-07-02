@@ -1,5 +1,5 @@
 double getUltra(int u) {
-   long duration;
+   unsigned long duration;
    double distance;
 
    //ultrasonic "1"
@@ -13,8 +13,7 @@ double getUltra(int u) {
       digitalWrite(TRIG1, LOW);
 
       duration = pulseIn(ECHO1, HIGH, 25000); // captures the sonor wave emitted by the ultrasonic sensor. the last parameter is the max distance the sensor will get (_duration = _distance * 2 / 0,0343)
-      distance = duration * 0.0343 / 2; // converts the distance in centimeters
-
+      distance = duration * 0.0343 / 2.0; // converts the distance in centimeters
       return distance;
    } 
 
@@ -307,4 +306,108 @@ void Obstacle(char c) {
       }
       break;
    }
+}
+
+void Obstacle_time()
+{
+   Serial.println("ENTEI NO OBS");
+   int obs_side = 0;//this variable is used for setting to which side the robot should turn
+   bool obs_finish = 0;//it will be used as a "condition", that is a while that do something while it hasnt find 90 deegres obs
+   int counter_black = 0;
+   unsigned long flag_obs;//just a flag for the obstacle whiles
+    while(!obs_finish)
+    {
+      obs_side = 1;//1 is for right -1 for left
+      turn(-90*obs_side);
+      walk_distance(2.0);
+      //adjusts itself to be aligned perpendicular to the black line
+      flag_obs = millis();
+      array_read();
+      while(els<=BLACK && ers<=BLACK && millis()-flag_obs<800)
+      {  
+        array_read();
+        walk(-SWL, -SWR);
+      }
+      flag_obs = millis();
+      if(ers<=BLACK && millis()-flag_obs<400){while(ers<=BLACK && millis()-flag_obs<400){array_read();walk(0, -SWR);}}
+      flag_obs = millis();
+      if(els<=BLACK && millis()-flag_obs<400){while(els<=BLACK && millis()-flag_obs<400){array_read();walk(-SWL, 0);}}
+      freeze(2);
+      walk_distance(22.0);
+      turn(90*obs_side);
+      walk_distance(10.0);
+      flag_obs = millis();
+      while(millis()-flag_obs < 2500 && counter_black <= 2)
+      {
+        array_read();
+        walk(SWL,SWR);
+        if(NOSIB() > 1)
+        {
+          counter_black++;
+        }
+      }
+      if(counter_black > 2)
+      {
+        obs_finish = 1;
+      }
+      if(obs_finish == 1)
+      {
+        walk_distance(4.0);
+        turn(-90*obs_side);
+        walk_distance(-4.0);
+        flag_obs = millis();
+        while(millis - flag_obs < 1000)
+        {
+          array_read();
+          PIDwalk(0.6);    
+        }
+        break;
+      }
+      walk_distance(12.0);
+      turn(90*obs_side);
+      walk_distance(7.0);//90 obs walks little this are in this codes
+      flag_obs = millis();
+      while(millis()-flag_obs < 2500 && counter_black <= 2)
+      {
+        array_read();
+        walk(SWL,SWR);
+        if(NOSIB() > 1)
+        {
+          counter_black++;
+        }
+      }
+      if(counter_black > 2)
+      {
+        obs_finish = 1;
+      }
+      if(obs_finish == 1)
+      {
+        walk_distance(4.0);
+        turn(-90*obs_side);
+        walk_distance(-4.0);
+        flag_obs = millis();
+        while(millis - flag_obs < 1000)
+        {
+          array_read();
+          PIDwalk(0.6);    
+        }
+        break;
+      }
+      freeze(1);
+      walk_distance(17.0);
+      turn(90*obs_side);
+      flag_obs = millis();
+      while(els<=BLACK && ers<=BLACK && millis()-flag_obs<7500)
+      {
+        array_read();
+        walk(SWL, SWR);
+      }
+      if(ers<=BLACK && millis()-flag_obs<2000){while(ers<=BLACK && millis()-flag_obs<1000){array_read();walk(0, -SWR);}}
+      if(els<=BLACK && millis()-flag_obs<2000){while(els<=BLACK && millis()-flag_obs<1000){array_read();walk(-SWL, 0);}}     
+      walk_distance(5.0);
+      turn(-85*obs_side);
+      walk_distance(-4.0);
+      break;
+   }
+   freeze(10);
 }
