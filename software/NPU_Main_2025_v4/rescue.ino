@@ -38,12 +38,12 @@ void SwallowBalls() {
   set_servo(2, 10);
     
   // makes the ball go a little further from the reflectance sensor to read the victim color more pecisely
-//  for (int i=0; i < 100; i++) {
-//      int auxb=analogRead(A1);      
-//      //reads the lowest value of the victim color
-//      if (auxb < BLACK_BALL)ball=auxb;
+  //  for (int i=0; i < 100; i++) {
+  //      int auxb=analogRead(A1);      
+  //      //reads the lowest value of the victim color
+  //      if (auxb < BLACK_BALL)ball=auxb;
   Serial.println(claw_TCRT);
-      //reads the victim color
+  //reads the victim color
   if (claw_TCRT < BLACK_BALL) {
     set_servo(3,OPENR); //separator
     alive=true;

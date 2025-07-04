@@ -48,7 +48,7 @@ void set_servo (int n, int f_pos)
 //makes all the servos go to their initial position
 void Servo_ipos()
 {
-  set_servo(1,10);
-  set_servo(2,180);
-  set_servo(3,80);
+  set_servo(1, INI_POS_1);
+  set_servo(2, INI_POS_2);
+  set_servo(3, INI_POS_3);
 }

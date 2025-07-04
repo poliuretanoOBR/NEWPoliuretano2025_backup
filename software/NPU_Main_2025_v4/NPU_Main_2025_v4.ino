@@ -10,6 +10,11 @@
 #define SERVO3 6 //servo port
 #define SERVO4 999 //servo port
 
+#define INI_POS_1 10
+#define INI_POS_2 0
+#define INI_POS_3 0
+#define INI_POS_4 990
+
 //ultrasonic ports
 #define ECHO1 35//echo ultrasonic left
 #define TRIG1 33 //trig ultrasonic left
@@ -149,6 +154,12 @@
 #define OPENL 58 //opens for left
 #define OPENR 120 // opens for right
 
+//Evacuatin zone define
+#define MAX_DETECTIONS 10
+
+
+//matrix for evacuation zone
+int detection_i = 0, detection_j = 0,detection_matrix [MAX_DETECTIONS][3], objects = 0;
 
 //battery value
 int battery = 0;
@@ -433,31 +444,59 @@ void setup() {
   pinMode(TOUCH2, INPUT_PULLUP);
   
   flag_loop = millis();
-
 }
+
 void loop() {
-  
-  
-  while(1)
+  /*Serial.println("C");
+  delay(2000);
+  Serial.println("A");
+  delay(100);
+  bool analyze=0;
+  int ang_alive, dist_alive, ang_dead, dist_dead, ang_tri_g, dist_tri_g, ang_tri_r, dist_tri_r;
+  if (analyze == 1)
   {
-    // Serial.println(getUltra(1));  
-    // delay(20);
-    Serial.println("C");
     Serial.println("A");
-    //Obstacle_time();
-    // array_read();
-    // array_print();
-    /*readLED();
-    color_print();*/
+    analyze=0;
+    delay(100);
   }
+  matrix_read();
+  int objects = detection_i + 1;
+  for(int i = 0; i < objects; i++)
+  {
+    if (detection_matrix[i][0] == 0) 
+    {
+      dist_alive = detection_matrix[i][1];
+      ang_alive = detection_matrix[i][2];
+      break;
+    }
+    // else if (detection_matrix[i][0] == 1) 
+    // {
+    //   ang_dead = detection_matrix[i][1];
+    //   dist_dead = detection_matrix[i][2];
+    // }
+    // else if (detection_matrix[i][0] == 2) 
+    // {
+    //   ang_tri_g = detection_matrix[i][1];
+    //   dist_tri_g = detection_matrix[i][2];
+    // }
+    // else if (detection_matrix[i][0] == 3) 
+    // {
+    //   ang_tri_r = detection_matrix[i][1];
+    //   dist_tri_r = detection_matrix[i][2];
+    // }
+  }
+  turn(ang_alive);
+  walk_distance(dist_alive);
+  SwallowBalls();*/
+
   if (millis() - flag_loop > 10) {
     //battery alert and array read
     BuzzerAlert();
     array_read();
 
     //detect when it goes up 
-    DetectInclinationDOWN();
-    DetectInclinationUP();
+    // DetectInclinationDOWN();
+    // DetectInclinationUP();
 
     // //Crossroad
     if((ms >=  MIDDLE_BLACK && NOSIB() >= 2) || NOSIB()>=3) {
@@ -475,7 +514,7 @@ void loop() {
       array_print();
       
       //obstacle
-      getObstacle();
+      //getObstacle();
     
       //turns+ off all led
       LEDcontrol(0, 0, 0);
